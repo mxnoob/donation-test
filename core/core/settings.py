@@ -116,7 +116,7 @@ EMAIL_PORT = getenv('EMAIL_PORT')
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ('rest_framework_simplejwt.authentication.JWTAuthentication',),
-    "DEFAULT_PERMISSION_CLASSES": ('rest_framework.permissions.IsAuthenticated',)
+    "DEFAULT_PERMISSION_CLASSES": ('rest_framework.permissions.IsAuthenticatedOrReadOnly',),
 }
 
 SIMPLE_JWT = {
@@ -135,3 +135,15 @@ CELERY_RESULT_BACKEND = getenv("CELERY_BACKEND", 'redis://redis:6379')
 
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
+
+INTERNAL_IPS = ['localhost', '127.0.0.1']
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://redis:6379/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient'
+        }
+    },
+}
