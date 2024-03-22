@@ -1,0 +1,37 @@
+version: "3.8"
+services:
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - 6379:6379
+
+  app:
+    build: .
+    volumes:
+      - app:/django/core
+    ports:
+      - 8000:8000
+    image: app:django
+    container_name: django_app
+    env_file:
+      - .env
+    command: >
+      sh -c "python manage.py migrate && 
+            python manage.py runserver 0.0.0.0:8000"
+
+  celery:
+    image: celery
+    restart: always
+    build:
+      context: .
+    env_file:
+      - .env
+    command: celery -A core worker -l INFO
+    container_name: celery
+    depends_on:
+      - redis
+      - app
+
+volumes:
+  app:
