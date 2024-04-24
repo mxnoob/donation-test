@@ -10,9 +10,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = getenv('SECRET_KEY', "ytlhxrtuhrnefjlthnjx2nfjej6yu7667e4t&&^&@s#-qq^*1")
 
-DEBUG = True
+DEBUG = getenv('DEBUG').lower() in ('true', 'on', '1')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = getenv('ALLOWED_HOSTS', 'localhost').split(',')
+
+INTERNAL_IPS = ['localhost', '127.0.0.1']
 
 
 INSTALLED_APPS = [
@@ -26,13 +28,16 @@ INSTALLED_APPS = [
     'rest_framework',
     'drf_yasg',
     'djoser',
+    'debug_toolbar',
 
     "users.apps.UsersConfig",
     "group_incomes.apps.GroupIncomesConfig",
-    "api.apps.ApiConfig",
+
+    'django_cleanup.apps.CleanupSelectedConfig'
 ]
 
 MIDDLEWARE = [
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -96,8 +101,8 @@ USE_I18N = True
 
 USE_TZ = True
 
-
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "static_dir"
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
@@ -113,6 +118,9 @@ EMAIL_HOST_PASSWORD = getenv('EMAIL_HOST_PASSWORD')
 EMAIL_HOST = getenv('EMAIL_HOST')
 EMAIL_PORT = getenv('EMAIL_PORT')
 
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': lambda r: True,
+}
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ('rest_framework_simplejwt.authentication.JWTAuthentication',),
@@ -133,14 +141,9 @@ SWAGGER_SETTINGS = {
 CELERY_BROKER_URL = getenv("CELERY_BROKER", 'redis://redis:6379')
 CELERY_RESULT_BACKEND = getenv("CELERY_BACKEND", 'redis://redis:6379')
 
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-
-INTERNAL_IPS = ['localhost', '127.0.0.1']
-
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'BACKEND': 'django_redis.cache.RedisCache',
         'LOCATION': 'redis://redis:6379/1',
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient'

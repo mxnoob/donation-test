@@ -1,4 +1,4 @@
-from .tasks import send_email_task
+from group_incomes.tasks import send_email_task
 
 
 def success_created_collect_email(to_email):

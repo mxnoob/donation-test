@@ -1,8 +1,11 @@
-from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.db import models
+from django.db.models import signals
+from django.dispatch import receiver
+from django_cleanup import cleanup
 
-
-User = get_user_model()
+from general.models import AuthorCreatedAt
+from .services import success_created_collect_email, success_created_payment_email
 
 
 class Event(models.Model):
@@ -16,29 +19,28 @@ class Event(models.Model):
         return self.title
 
 
-class Payment(models.Model):
-    author = models.ForeignKey(User, on_delete=models.PROTECT, related_name='payments', verbose_name='Донатер')
+class Payment(AuthorCreatedAt):
     amount = models.DecimalField('Сумма доната', max_digits=9, decimal_places=2)
     message = models.TextField('Сообщение', blank=True, null=True)
-    created_at = models.DateTimeField('Создано', auto_now_add=True)
-    collect = models.ForeignKey('Collect', on_delete=models.PROTECT, related_name='payments', verbose_name='Платежи')
+    collect = models.ForeignKey('Collect', on_delete=models.PROTECT, verbose_name='Платежи')
 
     class Meta:
+        default_related_name = 'payments'
         verbose_name = 'Донат'
         verbose_name_plural = "Донаты"
 
 
-class Collect(models.Model):
+@cleanup.select
+class Collect(AuthorCreatedAt):
     title = models.CharField('Название', max_length=256)
     description = models.TextField('Описание')
     image = models.ImageField('Картинка', upload_to='img/%Y')
     required_amount = models.DecimalField('Необходимая сумма', max_digits=15, decimal_places=2)
-    author = models.ForeignKey(User, on_delete=models.PROTECT, related_name='collects', verbose_name='Автор сбора')
-    event = models.ForeignKey(Event, on_delete=models.PROTECT, related_name='collects', verbose_name='Событие')
-    created_at = models.DateTimeField('Создано', auto_now_add=True)
+    event = models.ForeignKey(Event, on_delete=models.PROTECT, verbose_name='Событие')
     finished_at = models.DateTimeField('Конец сбора')
 
     class Meta:
+        default_related_name = 'collects'
         verbose_name = 'Сбор'
         verbose_name_plural = 'Сборы'
 
@@ -46,6 +48,20 @@ class Collect(models.Model):
         return self.title
 
 
-class CollectPayment(models.Model):
-    collect = models.ForeignKey(Collect, on_delete=models.PROTECT)
-    payment = models.ForeignKey(Payment, on_delete=models.PROTECT)
+@receiver(signals.post_save, sender=Payment)
+def update_payment(sender, instance, created, **kwargs):
+    dispose_collect(instance.collect.id)
+    if created:
+        success_created_payment_email(instance.author.email)
+
+
+@receiver(signals.post_save, sender=Collect)
+def update_collect(sender, instance, created, **kwargs):
+    dispose_collect(instance.id)
+    if created:
+        success_created_collect_email(instance.author.email)
+
+
+def dispose_collect(collect_id):
+    cache.delete('collects')
+    cache.delete('collect:%s' % collect_id)
