@@ -1,0 +1,6 @@
+[tool.isort]
+profile = "black"
+line_length = 79
+known_first_party = ["api", "general", "group_incomes"]
+extend_skip = ["migrations"]
+no_lines_before = ["LOCALFOLDER"]

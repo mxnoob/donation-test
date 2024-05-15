@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from group_incomes.models import Event, Payment, Collect
+from group_incomes.models import Collect, Event, Payment
 
 
 class EventSerializer(serializers.ModelSerializer):

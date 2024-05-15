@@ -1,12 +1,17 @@
 from django.core.cache import cache
-from django.db.models import Sum, Count
+from django.db.models import Count, Sum
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets
 
 from api.permissions import IsAdminOrReadOnly
 from api.viewsets import CreateOrReadModelViewSet
-from group_incomes.models import Event, Collect
-from .serializers import EventSerializer, PaymentSerializer, CollectPresentationSerializer, CollectDetailSerializer
+from group_incomes.models import Collect, Event
+from .serializers import (
+    CollectDetailSerializer,
+    CollectPresentationSerializer,
+    EventSerializer,
+    PaymentSerializer,
+)
 
 
 class EventViewSet(viewsets.ModelViewSet):

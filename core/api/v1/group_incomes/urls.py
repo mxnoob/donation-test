@@ -1,9 +1,10 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
-from .views import EventViewSet, PaymentViewSet, CollectViewSet
+from .views import CollectViewSet, EventViewSet, PaymentViewSet
 
 app_name = 'group_incomes'
+
 router = DefaultRouter()
 router.register('events', EventViewSet, basename='events')
 router.register('collects', CollectViewSet, basename='collects')
