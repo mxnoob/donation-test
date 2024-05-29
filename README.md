@@ -58,3 +58,7 @@ git clone git@github.com:mxnoob/donation-test.git
 # Запустить докер композ
 docker compose up -d --build
 ```
+
+## Автор:
+
+[mxnoob](https://www.github.com/mxnoob)
