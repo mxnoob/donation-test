@@ -19,9 +19,15 @@ class PaymentSerializer(serializers.ModelSerializer):
 
 
 class CollectPresentationSerializer(serializers.ModelSerializer):
-    current_amount = serializers.DecimalField(max_digits=15, decimal_places=2, read_only=True)
+    current_amount = serializers.DecimalField(
+        max_digits=15, decimal_places=2, read_only=True
+    )
     donation_total_counts = serializers.IntegerField(read_only=True)
-    author = serializers.SlugRelatedField(slug_field='email', read_only=True, default=serializers.CurrentUserDefault())
+    author = serializers.SlugRelatedField(
+        slug_field='email',
+        read_only=True,
+        default=serializers.CurrentUserDefault(),
+    )
 
     class Meta:
         model = Collect

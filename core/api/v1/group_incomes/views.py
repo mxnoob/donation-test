@@ -24,7 +24,9 @@ class PaymentViewSet(CreateOrReadModelViewSet):
     serializer_class = PaymentSerializer
 
     def perform_create(self, serializer):
-        serializer.save(author=self.request.user, collect_id=self.kwargs['collect_id'])
+        serializer.save(
+            author=self.request.user, collect_id=self.kwargs['collect_id']
+        )
 
     def get_queryset(self):
         return self.get_collect_obj().payments.all()
@@ -48,7 +50,10 @@ class CollectViewSet(viewsets.ModelViewSet):
             collects = (
                 Collect.objects.prefetch_related('payments')
                 .select_related('author')
-                .annotate(current_amount=Sum('payments__amount'), donation_total_counts=Count('payments'))
+                .annotate(
+                    current_amount=Sum('payments__amount'),
+                    donation_total_counts=Count('payments'),
+                )
             )
             cache.set('collects', collects, 60 * 15)
         return collects

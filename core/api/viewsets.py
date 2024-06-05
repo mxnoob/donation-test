@@ -3,6 +3,9 @@ from rest_framework.viewsets import GenericViewSet
 
 
 class CreateOrReadModelViewSet(
-    mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.CreateModelMixin, GenericViewSet
+    mixins.RetrieveModelMixin,
+    mixins.ListModelMixin,
+    mixins.CreateModelMixin,
+    GenericViewSet,
 ):
     pass

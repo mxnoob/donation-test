@@ -16,9 +16,13 @@ class Event(models.Model):
 
 
 class Payment(AuthorCreatedAt):
-    amount = models.DecimalField('Сумма доната', max_digits=9, decimal_places=2)
+    amount = models.DecimalField(
+        'Сумма доната', max_digits=9, decimal_places=2
+    )
     message = models.TextField('Сообщение', blank=True, null=True)
-    collect = models.ForeignKey('Collect', on_delete=models.PROTECT, verbose_name='Платежи')
+    collect = models.ForeignKey(
+        'Collect', on_delete=models.PROTECT, verbose_name='Платежи'
+    )
 
     class Meta:
         default_related_name = 'payments'
@@ -34,8 +38,12 @@ class Collect(AuthorCreatedAt):
     title = models.CharField('Название', max_length=256)
     description = models.TextField('Описание')
     image = models.ImageField('Картинка', upload_to='img/%Y')
-    required_amount = models.DecimalField('Необходимая сумма', max_digits=15, decimal_places=2)
-    event = models.ForeignKey(Event, on_delete=models.PROTECT, verbose_name='Событие')
+    required_amount = models.DecimalField(
+        'Необходимая сумма', max_digits=15, decimal_places=2
+    )
+    event = models.ForeignKey(
+        Event, on_delete=models.PROTECT, verbose_name='Событие'
+    )
     finished_at = models.DateTimeField('Конец сбора')
 
     class Meta:
@@ -45,5 +53,3 @@ class Collect(AuthorCreatedAt):
 
     def __str__(self):
         return self.title
-
-

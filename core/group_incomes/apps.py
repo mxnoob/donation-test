@@ -6,4 +6,4 @@ class GroupIncomesConfig(AppConfig):
     name = "group_incomes"
 
     def ready(self):
-        from . import signals
+        from . import signals  # noqa
